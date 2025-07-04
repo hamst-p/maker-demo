@@ -196,11 +196,77 @@ const CollageCanvas = forwardRef<HTMLDivElement, CollageCanvasProps>(
         );
         ctx.globalAlpha = 1.0; // Reset opacity
       
-        // Download image
-        const link = document.createElement('a');
-        link.download = `collage-${Date.now()}.png`;
-        link.href = canvas.toDataURL('image/png', 1.0);
-        link.click();
+        // Save image - mobile-friendly approach
+        const imageDataUrl = canvas.toDataURL('image/png', 1.0);
+        
+        // Detect mobile device
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+          // For mobile: Show image in new window for long-press save
+          const newWindow = window.open('', '_blank');
+          if (newWindow) {
+            newWindow.document.write(`
+              <!DOCTYPE html>
+              <html>
+                <head>
+                  <meta charset="utf-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <title>Save Image</title>
+                  <style>
+                    body {
+                      margin: 0;
+                      padding: 20px;
+                      background: #f0f0f0;
+                      display: flex;
+                      flex-direction: column;
+                      align-items: center;
+                      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                    }
+                    img {
+                      max-width: 100%;
+                      height: auto;
+                      border-radius: 8px;
+                      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    }
+                    .instructions {
+                      margin-top: 20px;
+                      text-align: center;
+                      color: #666;
+                      font-size: 16px;
+                      line-height: 1.5;
+                    }
+                    .close-btn {
+                      margin-top: 20px;
+                      padding: 12px 24px;
+                      background: #007AFF;
+                      color: white;
+                      border: none;
+                      border-radius: 8px;
+                      font-size: 16px;
+                      cursor: pointer;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <img src="${imageDataUrl}" alt="Collage Image">
+                  <div class="instructions">
+                    Long press the image above and select<br>
+                    "Save to Photos" or "Add to Photos"
+                  </div>
+                  <button class="close-btn" onclick="window.close()">Close</button>
+                </body>
+              </html>
+            `);
+            newWindow.document.close();
+          }
+        } else {
+          // For desktop: Traditional download
+          const link = document.createElement('a');
+          link.download = `collage-${Date.now()}.png`;
+          link.href = imageDataUrl;
+          link.click();
+        }
         
       } catch (error) {
         console.error('Save error:', error);
