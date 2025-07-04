@@ -86,15 +86,12 @@ const DraggableImage: React.FC<DraggableImageProps> = ({
     setTouches(newTouches);
 
     if (newTouches.length === 1) {
-      // Single touch - start long press detection
-      setIsLongPress(false);
-      longPressTimerRef.current = setTimeout(() => {
-        setIsLongPress(true);
-        setDragStart({
-          x: newTouches[0].x - bolhatState.x,
-          y: newTouches[0].y - bolhatState.y,
-        });
-      }, 300); // 300ms for faster response
+      // Single touch - immediate drag mode (no long press required)
+      setIsLongPress(true);
+      setDragStart({
+        x: newTouches[0].x - bolhatState.x,
+        y: newTouches[0].y - bolhatState.y,
+      });
     } else if (newTouches.length === 2) {
       // Two-finger touch - start pinch & rotation immediately
       setIsLongPress(false);
@@ -121,7 +118,7 @@ const DraggableImage: React.FC<DraggableImageProps> = ({
     }));
 
     if (currentTouches.length === 1 && isLongPress && touches.length === 1) {
-      // Move after long press - ensure stable tracking
+      // Direct touch movement - ensure stable tracking
       const currentTouch = currentTouches[0];
       const newX = currentTouch.x - dragStart.x;
       const newY = currentTouch.y - dragStart.y;
@@ -187,17 +184,13 @@ const DraggableImage: React.FC<DraggableImageProps> = ({
       setInitialScale(1);
       setInitialRotation(0);
     } else if (remainingTouches.length === 1) {
-      // Transition from multi-touch to single touch
-      setIsLongPress(false);
+      // Transition from multi-touch to single touch - immediate drag mode
+      setIsLongPress(true);
       setInitialDistance(0);
-      // Start new long press detection for remaining touch
-      longPressTimerRef.current = setTimeout(() => {
-        setIsLongPress(true);
-        setDragStart({
-          x: remainingTouches[0].x - bolhatState.x,
-          y: remainingTouches[0].y - bolhatState.y,
-        });
-      }, 300);
+      setDragStart({
+        x: remainingTouches[0].x - bolhatState.x,
+        y: remainingTouches[0].y - bolhatState.y,
+      });
     }
   }, [bolhatState.x, bolhatState.y]);
 
@@ -247,12 +240,7 @@ const DraggableImage: React.FC<DraggableImageProps> = ({
         draggable={false}
       />
       
-      {/* Operation hint */}
-      {isLongPress && (
-        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-          Move Mode
-        </div>
-      )}
+
     </div>
   );
 };

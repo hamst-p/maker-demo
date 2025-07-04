@@ -386,6 +386,54 @@ const CollageCanvas = forwardRef<HTMLDivElement, CollageCanvasProps>(
                 onUpdateBolhatState={onUpdateBolhatState}
               />
               
+              {/* Mobile scale buttons */}
+              <div className="absolute top-4 left-4 flex flex-col gap-2 md:hidden">
+                {/* Scale up button */}
+                <button
+                  onClick={() => {
+                    const newScale = Math.min(10, bolhatState.scale + 0.2);
+                    onUpdateBolhatState({ scale: newScale });
+                  }}
+                  className="w-12 h-12 bg-white/90 hover:bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                  title="Scale up"
+                >
+                  <svg 
+                    width="24" 
+                    height="24" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2"
+                    className="text-gray-700"
+                  >
+                    <path d="M12 5v14"/>
+                    <path d="M5 12h14"/>
+                  </svg>
+                </button>
+                
+                {/* Scale down button */}
+                <button
+                  onClick={() => {
+                    const newScale = Math.max(0.1, bolhatState.scale - 0.2);
+                    onUpdateBolhatState({ scale: newScale });
+                  }}
+                  className="w-12 h-12 bg-white/90 hover:bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                  title="Scale down"
+                >
+                  <svg 
+                    width="24" 
+                    height="24" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2"
+                    className="text-gray-700"
+                  >
+                    <path d="M5 12h14"/>
+                  </svg>
+                </button>
+              </div>
+
               {/* Rotation buttons */}
               <div className="absolute top-4 right-4 flex gap-2">
                 {/* Counter-clockwise button */}
