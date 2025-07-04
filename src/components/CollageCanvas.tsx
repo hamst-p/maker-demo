@@ -424,9 +424,9 @@ const CollageCanvas = forwardRef<HTMLDivElement, CollageCanvasProps>(
               </div>
 
               {/* Position adjustment buttons */}
-              <div className="absolute bottom-4 left-4 grid grid-cols-3 gap-1 md:hidden">
-                {/* Top row - Up arrow */}
-                <div className="col-start-2">
+              <div className="absolute bottom-4 left-4 md:hidden">
+                <div className="flex flex-col items-center gap-1">
+                  {/* Up arrow */}
                   <button
                     onClick={() => {
                       const newY = Math.max(0, bolhatState.y - 5);
@@ -447,55 +447,53 @@ const CollageCanvas = forwardRef<HTMLDivElement, CollageCanvasProps>(
                       <path d="M18 15l-6-6-6 6"/>
                     </svg>
                   </button>
-                </div>
-                
-                {/* Middle row - Left and Right arrows */}
-                <button
-                  onClick={() => {
-                    const newX = Math.max(0, bolhatState.x - 5);
-                    onUpdateBolhatState({ x: newX });
-                  }}
-                  className="w-10 h-10 bg-white/90 hover:bg-white rounded-lg shadow-lg border border-gray-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
-                  title="Move left"
-                >
-                  <svg 
-                    width="20" 
-                    height="20" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2"
-                    className="text-gray-700"
-                  >
-                    <path d="M15 18l-6-6 6-6"/>
-                  </svg>
-                </button>
-                
-                <div className="w-10 h-10"></div> {/* Empty center space */}
-                
-                <button
-                  onClick={() => {
-                    const newX = bolhatState.x + 5;
-                    onUpdateBolhatState({ x: newX });
-                  }}
-                  className="w-10 h-10 bg-white/90 hover:bg-white rounded-lg shadow-lg border border-gray-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
-                  title="Move right"
-                >
-                  <svg 
-                    width="20" 
-                    height="20" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2"
-                    className="text-gray-700"
-                  >
-                    <path d="M9 18l6-6-6-6"/>
-                  </svg>
-                </button>
-                
-                {/* Bottom row - Down arrow */}
-                <div className="col-start-2">
+                  
+                  {/* Left and Right arrows */}
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => {
+                        const newX = Math.max(0, bolhatState.x - 5);
+                        onUpdateBolhatState({ x: newX });
+                      }}
+                      className="w-10 h-10 bg-white/90 hover:bg-white rounded-lg shadow-lg border border-gray-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                      title="Move left"
+                    >
+                      <svg 
+                        width="20" 
+                        height="20" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2"
+                        className="text-gray-700"
+                      >
+                        <path d="M15 18l-6-6 6-6"/>
+                      </svg>
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        const newX = bolhatState.x + 5;
+                        onUpdateBolhatState({ x: newX });
+                      }}
+                      className="w-10 h-10 bg-white/90 hover:bg-white rounded-lg shadow-lg border border-gray-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                      title="Move right"
+                    >
+                      <svg 
+                        width="20" 
+                        height="20" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2"
+                        className="text-gray-700"
+                      >
+                        <path d="M9 18l6-6-6-6"/>
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  {/* Down arrow */}
                   <button
                     onClick={() => {
                       const newY = bolhatState.y + 5;
