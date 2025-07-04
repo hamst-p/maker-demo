@@ -69,6 +69,7 @@ const DraggableImage: React.FC<DraggableImageProps> = ({
   // Touch start
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     const newTouches: TouchData[] = Array.from(e.touches).map(touch => ({
       identifier: touch.identifier,
@@ -76,22 +77,26 @@ const DraggableImage: React.FC<DraggableImageProps> = ({
       y: touch.clientY,
     }));
     
+    // Clear any existing timer
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+    
     setTouches(newTouches);
 
     if (newTouches.length === 1) {
       // Single touch - start long press detection
+      setIsLongPress(false);
       longPressTimerRef.current = setTimeout(() => {
         setIsLongPress(true);
         setDragStart({
           x: newTouches[0].x - bolhatState.x,
           y: newTouches[0].y - bolhatState.y,
         });
-      }, 500); // 500ms for long press detection
+      }, 300); // 300ms for faster response
     } else if (newTouches.length === 2) {
-      // Two-finger touch - start pinch & rotation
-      if (longPressTimerRef.current) {
-        clearTimeout(longPressTimerRef.current);
-      }
+      // Two-finger touch - start pinch & rotation immediately
       setIsLongPress(false);
       
       const distance = getDistance(newTouches[0], newTouches[1]);
@@ -107,6 +112,7 @@ const DraggableImage: React.FC<DraggableImageProps> = ({
   // Touch move
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     const currentTouches: TouchData[] = Array.from(e.touches).map(touch => ({
       identifier: touch.identifier,
@@ -114,32 +120,36 @@ const DraggableImage: React.FC<DraggableImageProps> = ({
       y: touch.clientY,
     }));
 
-    if (currentTouches.length === 1 && isLongPress) {
-      // Move after long press
-      const newX = currentTouches[0].x - dragStart.x;
-      const newY = currentTouches[0].y - dragStart.y;
+    if (currentTouches.length === 1 && isLongPress && touches.length === 1) {
+      // Move after long press - ensure stable tracking
+      const currentTouch = currentTouches[0];
+      const newX = currentTouch.x - dragStart.x;
+      const newY = currentTouch.y - dragStart.y;
       
       onUpdateBolhatState({
         x: newX,
         y: newY,
       });
-    } else if (currentTouches.length === 2 && touches.length === 2) {
-      // Two-finger gesture
+    } else if (currentTouches.length === 2 && touches.length === 2 && initialDistance > 0) {
+      // Two-finger gesture - ensure both touches are tracked
       const currentDistance = getDistance(currentTouches[0], currentTouches[1]);
       const currentAngle = getAngle(currentTouches[0], currentTouches[1]);
       
-      // Scaling by pinch
+      // Scaling by pinch with smoothing
       const scaleRatio = currentDistance / initialDistance;
       const newScale = Math.max(0.1, Math.min(10, initialScale * scaleRatio));
       
-      // Rotation
+      // Rotation with improved angle calculation
       let angleDelta = currentAngle - initialAngle;
       
-      // Normalize angle (range -180 to 180)
+      // Normalize angle difference to prevent jumps
       while (angleDelta > 180) angleDelta -= 360;
       while (angleDelta < -180) angleDelta += 360;
       
-      const newRotation = (initialRotation + angleDelta) % 360;
+      // Calculate new rotation and normalize to 0-360 range
+      let newRotation = initialRotation + angleDelta;
+      while (newRotation < 0) newRotation += 360;
+      while (newRotation >= 360) newRotation -= 360;
       
       onUpdateBolhatState({
         scale: newScale,
@@ -152,8 +162,13 @@ const DraggableImage: React.FC<DraggableImageProps> = ({
 
   // Touch end
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Clear long press timer
     if (longPressTimerRef.current) {
       clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
     }
     
     const remainingTouches: TouchData[] = Array.from(e.touches).map(touch => ({
@@ -164,10 +179,27 @@ const DraggableImage: React.FC<DraggableImageProps> = ({
     
     setTouches(remainingTouches);
     
+    // Reset states when all touches end
     if (remainingTouches.length === 0) {
       setIsLongPress(false);
+      setInitialDistance(0);
+      setInitialAngle(0);
+      setInitialScale(1);
+      setInitialRotation(0);
+    } else if (remainingTouches.length === 1) {
+      // Transition from multi-touch to single touch
+      setIsLongPress(false);
+      setInitialDistance(0);
+      // Start new long press detection for remaining touch
+      longPressTimerRef.current = setTimeout(() => {
+        setIsLongPress(true);
+        setDragStart({
+          x: remainingTouches[0].x - bolhatState.x,
+          y: remainingTouches[0].y - bolhatState.y,
+        });
+      }, 300);
     }
-  }, []);
+  }, [bolhatState.x, bolhatState.y]);
 
   // Set up event listeners
   useEffect(() => {
@@ -182,6 +214,15 @@ const DraggableImage: React.FC<DraggableImageProps> = ({
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging, handleMouseMove, handleMouseUp]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div
