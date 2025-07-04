@@ -328,16 +328,7 @@ const CollageCanvas = forwardRef<HTMLDivElement, CollageCanvasProps>(
 
     return (
       <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex justify-between items-center mb-4">
-          
-          <button
-            onClick={handleSave}
-            disabled={!uploadedImage}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-          >
-            Save
-          </button>
-        </div>
+        <div className="mb-4"></div>
 
         <div
           ref={(element) => {
@@ -386,50 +377,101 @@ const CollageCanvas = forwardRef<HTMLDivElement, CollageCanvasProps>(
               
               {/* Mobile scale buttons */}
               <div className="absolute top-4 left-4 flex flex-col gap-2 md:hidden">
-                {/* Scale up button */}
-                <button
-                  onClick={() => {
-                    const newScale = Math.min(10, bolhatState.scale + 0.2);
-                    onUpdateBolhatState({ scale: newScale });
-                  }}
-                  className="w-12 h-12 bg-white/90 hover:bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
-                  title="Scale up"
-                >
-                  <svg 
-                    width="24" 
-                    height="24" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2"
-                    className="text-gray-700"
+                {/* Scale up buttons */}
+                <div className="flex flex-col gap-1">
+                  {/* Large scale up */}
+                  <button
+                    onClick={() => {
+                      const newScale = Math.min(10, bolhatState.scale + 0.1);
+                      onUpdateBolhatState({ scale: newScale });
+                    }}
+                    className="w-12 h-10 bg-white/90 hover:bg-white rounded-lg shadow-lg border border-gray-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                    title="Scale up (+0.1)"
                   >
-                    <path d="M12 5v14"/>
-                    <path d="M5 12h14"/>
-                  </svg>
-                </button>
+                    <svg 
+                      width="20" 
+                      height="20" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2.5"
+                      className="text-gray-700"
+                    >
+                      <path d="M12 5v14"/>
+                      <path d="M5 12h14"/>
+                    </svg>
+                  </button>
+                  
+                  {/* Fine scale up */}
+                  <button
+                    onClick={() => {
+                      const newScale = Math.min(10, bolhatState.scale + 0.05);
+                      onUpdateBolhatState({ scale: newScale });
+                    }}
+                    className="w-12 h-8 bg-white/90 hover:bg-white rounded-md shadow-md border border-gray-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                    title="Fine scale up (+0.05)"
+                  >
+                    <svg 
+                      width="16" 
+                      height="16" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2"
+                      className="text-gray-600"
+                    >
+                      <path d="M12 8v8"/>
+                      <path d="M8 12h8"/>
+                    </svg>
+                  </button>
+                </div>
                 
-                {/* Scale down button */}
-                <button
-                  onClick={() => {
-                    const newScale = Math.max(0.1, bolhatState.scale - 0.2);
-                    onUpdateBolhatState({ scale: newScale });
-                  }}
-                  className="w-12 h-12 bg-white/90 hover:bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
-                  title="Scale down"
-                >
-                  <svg 
-                    width="24" 
-                    height="24" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2"
-                    className="text-gray-700"
+                {/* Scale down buttons */}
+                <div className="flex flex-col gap-1">
+                  {/* Fine scale down */}
+                  <button
+                    onClick={() => {
+                      const newScale = Math.max(0.1, bolhatState.scale - 0.05);
+                      onUpdateBolhatState({ scale: newScale });
+                    }}
+                    className="w-12 h-8 bg-white/90 hover:bg-white rounded-md shadow-md border border-gray-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                    title="Fine scale down (-0.05)"
                   >
-                    <path d="M5 12h14"/>
-                  </svg>
-                </button>
+                    <svg 
+                      width="16" 
+                      height="16" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2"
+                      className="text-gray-600"
+                    >
+                      <path d="M8 12h8"/>
+                    </svg>
+                  </button>
+                  
+                  {/* Large scale down */}
+                  <button
+                    onClick={() => {
+                      const newScale = Math.max(0.1, bolhatState.scale - 0.1);
+                      onUpdateBolhatState({ scale: newScale });
+                    }}
+                    className="w-12 h-10 bg-white/90 hover:bg-white rounded-lg shadow-lg border border-gray-200 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                    title="Scale down (-0.1)"
+                  >
+                    <svg 
+                      width="20" 
+                      height="20" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2.5"
+                      className="text-gray-700"
+                    >
+                      <path d="M5 12h14"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               {/* Rotation buttons */}
@@ -492,13 +534,36 @@ const CollageCanvas = forwardRef<HTMLDivElement, CollageCanvasProps>(
                   </svg>
                 </button>
               </div>
-              {/* Watermark in bottom right corner */}
-              <img
-                src="/bolana.png"
-                alt="Watermark"
-                className="absolute bottom-2 right-6 w-16 h-16 object-contain opacity-30 pointer-events-none"
-                crossOrigin="anonymous"
-              />
+              {/* Save button */}
+              <div className="absolute bottom-4 right-4">
+                <button
+                  onClick={handleSave}
+                  className="group relative inline-flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl hover:from-gray-700 hover:to-gray-800 transition-all duration-300 ease-out shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 font-medium text-sm"
+                  title="Save collage"
+                >
+                  {/* Download Icon */}
+                  <svg 
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2.5"
+                    className="transition-transform duration-300 group-hover:translate-y-0.5"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7,10 12,15 17,10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  
+                  <span className="transition-all duration-300">
+                    Save
+                  </span>
+                  
+                  {/* Subtle shine effect */}
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </button>
+              </div>
               
               {/* Hidden Bolhat image for saving */}
               <img
